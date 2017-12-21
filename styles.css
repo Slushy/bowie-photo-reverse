@@ -19,6 +19,11 @@ body {
         margin-bottom: 20px;
     }
 
-    .canvas-container button {
+    .canvas-container button,
+    .canvas-container a {
         display: none;
+    }
+
+    .canvas-container a {
+        text-decoration: none;
     }
