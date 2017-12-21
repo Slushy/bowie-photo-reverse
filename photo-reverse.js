@@ -96,7 +96,7 @@ function convertCurrentImage() {
                     imageData.data[getColorIdx(col, row, GREEN)] +
                     imageData.data[getColorIdx(col, row, BLUE)];
                 if (tempColor >= colorMin && tempColor <= colorMax) {
-                    green = blue = red * 0.99;
+                    green = blue = red * 0.995;
                 }
             }
             else if (col <= secondColorSplit) {
@@ -106,7 +106,7 @@ function convertCurrentImage() {
                     imageData.data[getColorIdx(col, row, GREEN)] +
                     imageData.data[getColorIdx(col, row, BLUE)];
                 if (tempColor >= colorMin && tempColor <= colorMax) {
-                    green = blue = red * 0.99;
+                    green = blue = red * 0.995;
                 }
             }
 
