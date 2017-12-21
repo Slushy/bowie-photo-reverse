@@ -53,32 +53,61 @@ function convertCurrentImage() {
 
     // Creates the size of the split between blue and red for this canvas size
     var colorSplit = Math.floor(canvas.width / MAGIC_PIXEL_NUMBER);
-    var blueColorSplit = colorSplit
-    var redColorSplit = colorSplit * 2;
+    var firstColorSplit = colorSplit
+    var secondColorSplit = colorSplit * 2;
 
     var rowWidth = canvas.width * PIXEL_LENGTH;
 
     // Helpful function to get a specific column row rgba index of a linear array
     var getColorIdx = (col, row, color) => {
-        col = Math.min(col, canvas.width - 1);
-        row = Math.min(row, canvas.height - 1);
+        col = Math.max(Math.min(col, canvas.width - 1), 0);
+        row = Math.max(Math.min(row, canvas.height - 1), 0);
         return (row * rowWidth) + (col * PIXEL_LENGTH) + color;
-    }    
+    }
+
+    // Getting the base colors to compare against to prevent artificating on the very left
+    // side of the image
+    var halfColorSplit = firstColorSplit / 2;
+    var tripleHalfColorSplit = halfColorSplit * 3;
+    var colorCompareFirst = imageData.data[getColorIdx(halfColorSplit, 5, RED)] +
+        imageData.data[getColorIdx(halfColorSplit, 5, GREEN)] +
+        imageData.data[getColorIdx(halfColorSplit, 5, BLUE)];
+    var colorCompareSecond = imageData.data[getColorIdx(tripleHalfColorSplit, 5, RED)] +
+        imageData.data[getColorIdx(tripleHalfColorSplit, 5, GREEN)] +
+        imageData.data[getColorIdx(tripleHalfColorSplit, 5, BLUE)];
 
     // Loop over every pixel of the image
     for (var col = 0; col < canvas.width; col++) {
         for (var row = 0; row < canvas.height; row++) {
             // Pull the red and blue pixel from different location on the bowie image
-            var red = imageData.data[getColorIdx(col + redColorSplit, row, RED)];
-            var blue = imageData.data[getColorIdx(col + blueColorSplit, row, BLUE)];
+            var red = imageData.data[getColorIdx(col + secondColorSplit, row, RED)];
+            var blue = imageData.data[getColorIdx(col + firstColorSplit, row, BLUE)];
 
             // Green & alpha pixel locations don't change between images
             var green = imageData.data[getColorIdx(col, row, GREEN)];
-            
+
             // The first part of the bowie images are weird, so this just
             // sets it to the smooth gray color seen around the edges
-            if (col <= redColorSplit) {
-                green = blue = red;
+            var splitComparisonDiff = 50;
+            if (col <= firstColorSplit) {
+                var colorMin = colorCompareFirst - splitComparisonDiff;
+                var colorMax = colorCompareFirst + splitComparisonDiff;
+                var tempColor = imageData.data[getColorIdx(col, row, RED)] +
+                    imageData.data[getColorIdx(col, row, GREEN)] +
+                    imageData.data[getColorIdx(col, row, BLUE)];
+                if (tempColor >= colorMin && tempColor <= colorMax) {
+                    green = blue = red;
+                }
+            }
+            else if (col <= secondColorSplit) {
+                var colorMin = colorCompareSecond - splitComparisonDiff;
+                var colorMax = colorCompareSecond + splitComparisonDiff;
+                var tempColor = imageData.data[getColorIdx(col, row, RED)] +
+                    imageData.data[getColorIdx(col, row, GREEN)] +
+                    imageData.data[getColorIdx(col, row, BLUE)];
+                if (tempColor >= colorMin && tempColor <= colorMax) {
+                    green = blue = red;
+                }
             }
 
             // Set the pixel rgb value to the converted gray scale value
@@ -87,6 +116,7 @@ function convertCurrentImage() {
             imageData.data[getColorIdx(col, row, RED)] = grayScale;
             imageData.data[getColorIdx(col, row, GREEN)] = grayScale;
             imageData.data[getColorIdx(col, row, BLUE)] = grayScale;
+            imageData.data[getColorIdx(col, row, ALPHA)] = 255;
         }
     }
 
