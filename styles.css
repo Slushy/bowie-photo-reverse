@@ -8,20 +8,23 @@ body {
 
 .canvas-container {
     text-align: center;
-    width: 450px;
+    max-width: 800px;
 }
 
     .canvas-container canvas {
-        width: 400px;
+        max-width: 800px;
     }
 
     .canvas-container .image-info {
         margin-bottom: 20px;
+        font-size: 18px;
     }
 
     .canvas-container button,
-    .canvas-container a {
+    .canvas-container a,
+    .canvas-container label {
         display: none;
+        font-size: 20px;
     }
 
     .canvas-container a {

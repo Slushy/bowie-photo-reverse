@@ -1,4 +1,4 @@
-var imageContainer, canvas, ctx, imageInfo, convertButton, downloadLink, downloadFileName;
+var imageContainer, canvas, ctx, imageInfo, convertButton, downloadLink, downloadFileName, loadingLabel;
 // each pixel's r,g,b,a datum are stored in separate sequential array elements
 var PIXEL_LENGTH = 4;
 var RED = 0;
@@ -24,7 +24,7 @@ function onImageSelected(e) {
             ctx.drawImage(img, 0, 0);
 
             imageInfo.innerText = 'width = ' + img.width + 'px, height = ' + img.height + 'px';
-            convertButton.style.display = 'block';
+            convertButton.style.display = 'inline-block';
             downloadLink.style.display = 'none';
         }
         img.src = event.target.result;
@@ -47,9 +47,7 @@ function setDownloadFileName(imagePath) {
 }
 
 /** Removes the bowie filter of the current image in the canvas */
-function onConvert(e) {
-    convertButton.style.display = 'none';
-
+function convertCurrentImage() {
     var imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
     var data = imageData.data;
 
@@ -100,6 +98,7 @@ function onConvert(e) {
         downloadLink.setAttribute('download', downloadFileName);
         downloadLink.setAttribute('href', URL.createObjectURL(blob));
         downloadLink.style.display = 'block';
+        loadingLabel.style.display = 'none';
     });
 }
 
@@ -115,5 +114,13 @@ window.onload = () => {
     imageInfo = imageContainer.querySelector('.image-info');
     downloadLink = imageContainer.querySelector('a');
     convertButton = imageContainer.querySelector('button');
-    convertButton.addEventListener('click', onConvert);
+    loadingLabel = imageContainer.querySelector('label');
+
+    convertButton.addEventListener('click', () => {
+        loadingLabel.style.display = 'block';
+        convertButton.style.display = 'none';
+
+        // Allow DOM update before conversion
+        window.setTimeout(convertCurrentImage, 10);
+    });
 };
