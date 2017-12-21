@@ -1,3 +1,24 @@
 body {
     padding: 20px;
 }
+
+.header {
+    margin-bottom: 20px;
+}
+
+.canvas-container {
+    text-align: center;
+    width: 450px;
+}
+
+    .canvas-container canvas {
+        width: 400px;
+    }
+
+    .canvas-container .image-info {
+        margin-bottom: 20px;
+    }
+
+    .canvas-container button {
+        display: none;
+    }
