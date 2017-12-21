@@ -96,7 +96,7 @@ function convertCurrentImage() {
                     imageData.data[getColorIdx(col, row, GREEN)] +
                     imageData.data[getColorIdx(col, row, BLUE)];
                 if (tempColor >= colorMin && tempColor <= colorMax) {
-                    green = blue = red;
+                    green = blue = red * 0.99;
                 }
             }
             else if (col <= secondColorSplit) {
@@ -106,16 +106,23 @@ function convertCurrentImage() {
                     imageData.data[getColorIdx(col, row, GREEN)] +
                     imageData.data[getColorIdx(col, row, BLUE)];
                 if (tempColor >= colorMin && tempColor <= colorMax) {
-                    green = blue = red;
+                    green = blue = red * 0.99;
                 }
+            }
+
+            // This helps with artifacting on the right side of the screen,
+            // why the number 1.02? I have no freaking idea, trial and error.
+            if (col >= canvas.width - secondColorSplit) {
+                red = green * 1.02;
+                blue = green * 1.02;
             }
 
             // Set the pixel rgb value to the converted gray scale value
             // https://en.wikipedia.org/wiki/Grayscale
             var grayScale = (red * 0.3) + (green * 0.59) + (blue * 0.11);
-            imageData.data[getColorIdx(col, row, RED)] = grayScale;
-            imageData.data[getColorIdx(col, row, GREEN)] = grayScale;
-            imageData.data[getColorIdx(col, row, BLUE)] = grayScale;
+            imageData.data[getColorIdx(col, row, RED)] = Math.min(grayScale, 255);
+            imageData.data[getColorIdx(col, row, GREEN)] = Math.min(grayScale, 255);
+            imageData.data[getColorIdx(col, row, BLUE)] = Math.min(grayScale, 255);
             imageData.data[getColorIdx(col, row, ALPHA)] = 255;
         }
     }
